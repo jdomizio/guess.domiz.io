@@ -1,13 +1,11 @@
 ﻿import { applyMiddleware, combineReducers, compose, createStore } from 'redux';
 import thunk from 'redux-thunk';
 import { routerReducer, routerMiddleware } from 'react-router-redux';
-import * as Counter from './Counter';
-import * as WeatherForecasts from './WeatherForecasts';
+import * as GuessingGame from './GuessingGame';
 
 export default function configureStore(history, initialState) {
   const reducers = {
-    counter: Counter.reducer,
-    weatherForecasts: WeatherForecasts.reducer
+    game: GuessingGame.reducer,
   };
 
   const middleware = [
@@ -27,9 +25,13 @@ export default function configureStore(history, initialState) {
     routing: routerReducer
   });
 
-  return createStore(
+  const store = createStore(
     rootReducer,
     initialState,
     compose(applyMiddleware(...middleware), ...enhancers)
   );
+  
+  GuessingGame.hub.init(store);
+  
+  return store;
 }

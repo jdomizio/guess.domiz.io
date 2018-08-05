@@ -1,3 +1,4 @@
+using guess.domiz.io.Hubs;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -22,11 +23,15 @@ namespace guess.domiz.io
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
+            services.AddSignalR();
+            
             // In production, the React files will be served from this directory
             services.AddSpaStaticFiles(configuration =>
             {
                 configuration.RootPath = "ClientApp/build";
             });
+
+            services.AddSingleton<GuessHub>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -46,6 +51,11 @@ namespace guess.domiz.io
             app.UseStaticFiles();
             app.UseSpaStaticFiles();
 
+            app.UseSignalR(configure =>
+            {
+                configure.MapHub<GuessHub>("/game");
+            });
+            
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
