@@ -1,0 +1,19 @@
+branches:
+  only:
+    - master
+    
+skip_tags: true
+
+max_jobs: 1
+
+image: Visual Studio 2017
+
+cache:
+  - node_modules
+ 
+build_script:
+  - dotnet publish -c Release
+
+artifacts:
+  - path: bin/Release/netcoreapp2.1/publish
+    name: guess
