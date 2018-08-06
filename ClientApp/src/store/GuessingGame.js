@@ -7,6 +7,8 @@ export const GAME_STATES = {
 
 const INITAL_STATE = {
     gameState: GAME_STATES.JOIN,
+    game: null,
+    joined: false,
 };
 
 export const actionCreators = {
@@ -14,6 +16,7 @@ export const actionCreators = {
     joined: createAction('guessingGame/JOINED'),
     guessing: createAction('guessingGame/GUESSING'),
     guessed: createAction('guessingGame/GUESSED'),
+    gameChanged: createAction('guessingGame/GAME_CHANGED'),
 };
 
 export const reducer = handleActions({
@@ -24,6 +27,12 @@ export const reducer = handleActions({
     
     [actionCreators.joined]: state => ({
         ...state, 
+        joined: true, 
+    }),
+    
+    [actionCreators.gameChanged]: (state, { payload }) => ({
+        ...state, 
+        game: payload,
     }),
 }, INITAL_STATE);
 
@@ -66,6 +75,11 @@ export const hub = {
         
         this.connection.on('EndGame', (msg) => {
             console.log('The game has ended.', msg);
+        });
+        
+        this.connection.on('GameState', game => {
+            console.log('Game State Update.', game);
+            this.store.dispatch(actionCreators.gameChanged(game));
         });
         
         this.connection.start()
