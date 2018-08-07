@@ -53,7 +53,7 @@ namespace guess.domiz.io.Hubs
                     if (!c.DisconnectToken.IsCancellationRequested)
                     {
                         _logger.LogInformation("{name} is already taken by {connectionId}", name, c.ConnectionId);
-                        await Clients.Caller.SendAsync("GameJoinError", name);
+                        await Clients.Caller.SendAsync("GameJoinError", name, "That name is already taken");
                         return;
                     }
                 }
@@ -76,18 +76,36 @@ namespace guess.domiz.io.Hubs
             await _master.SendAsync("GuessMade", name, guess);
         }
 
-        public async Task EndGame(string gameId, string auth)
+        public async Task GuessMadeResponse(string name, string message)
         {
-            _logger.LogInformation("Game {gameId} has ended.", gameId);
+            _logger.LogInformation("GuessMadeResponse: {name}, {message}", name, message);
+            if (!_players.TryGetValue(name, out var player))
+            {
+                return;
+            }
+
+            var client = Clients.Client(player.ConnectionId);
+            if (client == null)
+            {
+                return;
+            }
+
+            await client.SendAsync("MakeGuessResponse", message);
+        }
+        
+        public async Task EndGame(GameInfo game, string auth)
+        {
+            _logger.LogInformation("Game {gameId} has ended.", game.GameId);
 
             _currentGame.Finished = true;
+            _currentGame.Winner = game.Winner;
             
             await Clients.Others.SendAsync("GameState", _currentGame);
         }
 
         public override Task OnConnectedAsync()
         {
-            _logger.LogDebug("OnConnectedAsync()");
+            _logger.LogDebug("OnConnectedAsync: {connectionId}", Context.ConnectionId);
             return base.OnConnectedAsync();
         }
 

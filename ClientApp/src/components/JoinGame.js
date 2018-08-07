@@ -24,20 +24,26 @@ class JoinGame extends Component {
     };
     
     render() {
+        const msg = this.props.joinError 
+            ? this.props.joinError
+            : "Please enter your name";
+        
         return (
-            <section>
-                <form onSubmit={this.handleSubmit}>
-                    <header>Please enter your name</header>
-                    <div>
-                        <input ref={this.makeNameInputRef} type="text" />
-                        <button onClick={this.handleSubmit}>Join Game</button>
-                    </div>
-              </form>
-            </section>
+            <form onSubmit={this.handleSubmit} className="guess-form">
+                <div className="guess-msg">{msg}</div>
+                <div className="guess-prompt">
+                    <input ref={this.makeNameInputRef} type="text" />
+                </div>
+                <div className="guess-button">
+                    <button onClick={this.handleSubmit}>Join Game</button>
+                </div>
+          </form>
         );    
     }
 }
 
-export default connect(undefined, {
+export default connect(state => ({
+    joinError: state.game.joinError,
+}), {
     join: thunks.join,
 })(JoinGame);

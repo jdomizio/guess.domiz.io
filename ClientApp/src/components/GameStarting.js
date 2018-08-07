@@ -1,11 +1,9 @@
 import React from 'react';
 
 const GameStarting = () => (
-    <section>
-        <header>
-            The game is about to start!  Get ready!.
-        </header>
-    </section>
+    <div className="guess-msg --hero">
+        The game is about to start!  Get ready!.
+    </div>
 );
 
 export default GameStarting;

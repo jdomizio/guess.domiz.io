@@ -3,8 +3,8 @@ import { connect } from 'react-redux';
 import JoinGame from './JoinGame';
 import WaitingForGame from './WaitingForGame';
 import GameStarting from './GameStarting';
-
-import { GAME_STATES } from '../store/GuessingGame';
+import GameView from './GameView';
+import GameFinished from './GameFinished';
 
 class Home extends Component {
     selectView(game) {
@@ -20,6 +20,14 @@ class Home extends Component {
             return <GameStarting />;
         }
         
+        if (!game.game.finished) {
+            return <GameView />;
+        }
+        
+        if (game.game.finished) {
+            return <GameFinished />;
+        } 
+        
         return <div>No State Made for this yet, super :)</div>
     }
     
@@ -27,7 +35,7 @@ class Home extends Component {
         const view = this.selectView(this.props.game);
         
         return (
-            <article>
+            <article className="guess-view-container">
                 {view}
             </article>
         );
